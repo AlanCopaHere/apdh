@@ -16,33 +16,33 @@ export const CLUBES = [
   { 
     id: 1, 
     nombre: "Payrumani", 
-    lema: "Cantaremos lloraremos", 
+    lema: "Payru uh-uh-uh-uh", 
     fundacion: "1998", 
     color: "from-emerald-500",
-    estadio: "Arena Central"
+    estadio: "Cancha Payrumani"
   },
   { 
     id: 2, 
     nombre: "16 De Julio", 
-    lema: "Velocidad y coraje", 
+    lema: "Relleno textual demostrativo", 
     fundacion: "2005", 
     color: "from-yellow-500",
-    estadio: "Campo Rayo"
+    estadio: "Some Arena"
   },
   { 
     id: 3, 
     nombre: "Los Andes", 
-    lema: "Rugiendo con fuerza", 
+    lema: "Lorem ipusun", 
     fundacion: "2010", 
     color: "from-rose-500",
-    estadio: "Coliseo Sur"
+    estadio: "Coliseo"
   },
   { 
     id: 4, 
     nombre: "Stroyers", 
-    lema: "Fuego en la cancha", 
+    lema: "No me sé ningún lema", 
     fundacion: "2015", 
     color: "from-orange-600",
-    estadio: "La Caldera"
+    estadio: "Coliseo"
   }
 ];

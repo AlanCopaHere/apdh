@@ -33,7 +33,7 @@ export default function HomePage() {
           </h1>
 
           <p className="text-gray-400 text-lg md:text-xl max-w-2xl mx-auto mb-12 leading-relaxed">
-            La Asociación de Provincial de Deportes Huachacalla (APDH) presenta el torneo más prestigioso de la región. Pasión, técnica y gloria en un solo lugar.
+            La Asociación Provincial de Deportes Huachacalla (APDH) presenta el torneo más prestigioso de la región. Pasión, técnica y gloria en un solo lugar.
           </p>
 
           {/* Botones de Acción - Aquí conectamos las rutas */}
@@ -65,7 +65,7 @@ export default function HomePage() {
         className="absolute bottom-12 w-full max-w-4xl px-6 grid grid-cols-3 gap-8 border-t border-white/5 pt-8 md:grid"
       >
         <div className="text-center">
-          <p className="text-2xl font-black text-white italic">12</p>
+          <p className="text-2xl font-black text-white italic">19</p>
           <p className="text-[10px] uppercase tracking-widest text-gray-500 font-bold">Clubes</p>
         </div>
         <div className="text-center border-x border-white/10">

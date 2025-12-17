@@ -64,13 +64,13 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             fixed inset-0 top-20 bg-[#0a0f0d] z-50 transition-transform duration-300 md:hidden ${isMenuOpen ? 'translate-x-0' : 'translate-x-full'}`}>
             {/* Aca se hace la apertura */}
             <div className="z-150 bg-black/60 backdrop-blur-3xl">
-              <div className="flex flex-col items-center justify-center h-full gap-10 pb-20 ">
+              <div className="flex flex-col items-center justify-center h-full gap-10 pb-20">
                 {navLinks.map((link) => (
                   <Link
                     key={link.href}
                     href={link.href}
                     onClick={() => setIsMenuOpen(false)}
-                    className="text-4xl font-black uppercase tracking-tighter hover:text-emerald-500 transition-colors">
+                    className="text-2xl font-black uppercase tracking-tighter hover:text-emerald-500 transition-colors">
                     {link.label}
                   </Link>
                 ))}
