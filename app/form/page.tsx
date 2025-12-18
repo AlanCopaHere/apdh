@@ -295,7 +295,7 @@ function Select({ label, options, value, onChange, placeholder = "Seleccionar...
               {value ? (renderOption ? null : value) : placeholder}
             </span>
           </div>
-          <ChevronDown size={16} className={`text-gray-500 transition-transform duration-200 ${isOpen ? 'rotate-180' : ''} ml-2 flex-shrink-0`} />
+          <ChevronDown size={16} className={`text-gray-500 transition-transform duration-200 ${isOpen ? 'rotate-180' : ''} ml-2 shrink-0`} />
         </button>
 
         <AnimatePresence>
@@ -321,7 +321,7 @@ function Select({ label, options, value, onChange, placeholder = "Seleccionar...
                     {renderOption && renderOption(opt, false)}
                     <span>{opt}</span>
                   </div>
-                  {value === opt && <CheckCircle2 size={14} className="ml-2 flex-shrink-0" />}
+                  {value === opt && <CheckCircle2 size={14} className="ml-2 shrink-0" />}
                 </button>
               ))}
             </motion.div>
