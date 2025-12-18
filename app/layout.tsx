@@ -21,6 +21,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     { href: "/about", label: "Nosotros" },
     { href: "/clubes", label: "Clubes" },
     { href: "/posiciones", label: "Posiciones" },
+    { href: "/form", label: "Habilitarse" },
   ];
 
   return (
