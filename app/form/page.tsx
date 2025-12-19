@@ -4,7 +4,7 @@ import { useState, ChangeEvent, FormEvent, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Upload, CheckCircle2, ChevronRight, ChevronLeft, ChevronDown } from "lucide-react";
 // Importa tu cliente de supabase si ya lo tienes
-// import { supabase } from "@/lib/supabase"; 
+import { supabase } from "@/lib/supabase";
 
 const CLUBES = [
   "Payrumani", "16 De Julio", "25 De Julio", "Stroyers", "Sajama", "Alianza",
@@ -38,6 +38,16 @@ export default function RegistroJugador() {
   const [step, setStep] = useState(1);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
+  const [canSubmit, setCanSubmit] = useState(false);
+
+  useEffect(() => {
+    if (step === 3) {
+      const timer = setTimeout(() => setCanSubmit(true), 1000);
+      return () => clearTimeout(timer);
+    } else {
+      setCanSubmit(false);
+    }
+  }, [step]);
 
   const [formData, setFormData] = useState<FormData>({
     dni: "", apellidoP: "", apellidoM: "", nombres: "",
@@ -60,11 +70,70 @@ export default function RegistroJugador() {
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
+    if (step !== 3) return;
     setIsSubmitting(true);
-    setTimeout(() => {
-      setIsSubmitting(false);
+
+    try {
+      // 1. Subir Foto Anverso
+      const fileAnverso = formData.fotoAnverso;
+      let urlAnverso = "";
+      if (fileAnverso) {
+        const fileExt = fileAnverso.name.split('.').pop();
+        const fileName = `${formData.dni}_anverso.${fileExt}`;
+        const { data, error: uploadError } = await supabase.storage
+          .from('fotos_carnet_anverso')
+          .upload(fileName, fileAnverso, { upsert: true });
+
+        if (uploadError) throw uploadError;
+        urlAnverso = supabase.storage.from('fotos_carnet_anverso').getPublicUrl(fileName).data.publicUrl;
+      }
+
+      // 2. Subir Foto Reverso
+      const fileReverso = formData.fotoReverso;
+      let urlReverso = "";
+      if (fileReverso) {
+        const fileExt = fileReverso.name.split('.').pop();
+        const fileName = `${formData.dni}_reverso.${fileExt}`;
+        const { data, error: uploadError } = await supabase.storage
+          .from('fotos_carnet_anverso')
+          .upload(fileName, fileReverso, { upsert: true });
+
+        if (uploadError) throw uploadError;
+        urlReverso = supabase.storage.from('fotos_carnet_anverso').getPublicUrl(fileName).data.publicUrl;
+      }
+
+      // 3. Guardar datos en la tabla 'jugadores'
+      const { error: dbError } = await supabase
+        .from('jugadores_registrados')
+        .insert([{
+          dni: formData.dni,
+          apellido_p: formData.apellidoP,
+          apellido_m: formData.apellidoM,
+          nombres: formData.nombres,
+          fecha_nac: formData.fechaNac,
+          lugar_nac: formData.lugarNac,
+          sexo: formData.sexo,
+          estado_civil: formData.estadoCivil,
+          foto_anverso_url: urlAnverso,
+          foto_reverso_url: urlReverso,
+          padre_p: formData.padreP,
+          padre_m: formData.padreM,
+          padre_nom: formData.padreNom,
+          madre_p: formData.madreP,
+          madre_m: formData.madreM,
+          madre_nom: formData.madreNom,
+          club: formData.club
+        }]);
+
+      if (dbError) throw dbError;
+
+      // Si todo sale bien
       setIsSuccess(true);
-    }, 2000);
+    } catch (error: any) {
+      alert("Error al registrar: " + error.message);
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -134,6 +203,7 @@ export default function RegistroJugador() {
                     desc="Frontal del documento"
                     onChange={(file) => setFormData({ ...formData, fotoAnverso: file })}
                   />
+
                   <FileInput
                     label="Foto Reverso"
                     desc="Trasera del documento"
@@ -222,7 +292,7 @@ export default function RegistroJugador() {
                   Siguiente <ChevronRight size={20} />
                 </button>
               ) : (
-                <button type="submit" disabled={isSubmitting} className="bg-white hover:bg-emerald-500 hover:text-white text-black font-black px-12 py-3 rounded-full transition-all disabled:opacity-50">
+                <button type="submit" disabled={isSubmitting || !canSubmit} className="bg-white hover:bg-emerald-500 hover:text-white text-black font-black px-12 py-3 rounded-full transition-all disabled:opacity-50">
                   {isSubmitting ? "PROCESANDO..." : "FINALIZAR REGISTRO"}
                 </button>
               )}
@@ -332,7 +402,15 @@ function Select({ label, options, value, onChange, placeholder = "Seleccionar...
   );
 }
 
-function FileInput({ label, desc, onChange }: { label: string, desc: string, onChange: (file: File | null) => void }) {
+function FileInput({
+  label,
+  desc,
+  onChange
+}: {
+  label: string,
+  desc: string,
+  onChange: (file: File | null) => void
+}) {
   return (
     <div className="flex flex-col gap-2">
       <label className="text-[10px] font-bold uppercase text-gray-500 ml-2">{label}</label>
@@ -345,8 +423,10 @@ function FileInput({ label, desc, onChange }: { label: string, desc: string, onC
           type="file"
           className="hidden"
           accept="image/*"
-          onChange={(e) => {
+          onChange={(e: ChangeEvent<HTMLInputElement>) => {
+            // Aquí 'e' es el evento, extraemos el archivo
             const file = e.target.files ? e.target.files[0] : null;
+            // Pasamos el archivo (no el evento) hacia arriba
             onChange(file);
           }}
         />
