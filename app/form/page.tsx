@@ -39,6 +39,7 @@ export default function RegistroJugador() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
   const [canSubmit, setCanSubmit] = useState(false);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   useEffect(() => {
     if (step === 3) {
@@ -60,7 +61,82 @@ export default function RegistroJugador() {
 
   const progress = (step / 3) * 100;
 
-  const handleNext = () => setStep((prev) => Math.min(prev + 1, 3));
+  // Handlers para Input Masking (Validación en tiempo real)
+  const handleNameChange = (val: string, field: string) => {
+    // 1. Evitar espacios al inicio
+    if (val.length === 1 && val === " ") return;
+    // 2. Solo permitir letras y espacios (Regex estricto)
+    if (val !== "" && !/^[a-zA-Z\u00C0-\u00FF\s]+$/.test(val)) return;
+
+    setFormData(prev => ({ ...prev, [field]: val }));
+  };
+
+  const handleTextChange = (val: string, field: string) => {
+    // 1. Evitar espacios al inicio
+    if (val.length === 1 && val === " ") return;
+    setFormData(prev => ({ ...prev, [field]: val }));
+  };
+
+  const validateStep = (currentStep: number) => {
+    // Validar Paso 1
+    if (currentStep === 1) {
+      const textFields = [
+        { val: formData.dni, label: "DNI" },
+        { val: formData.apellidoP, label: "Apellido Paterno" },
+        { val: formData.apellidoM, label: "Apellido Materno" },
+        { val: formData.nombres, label: "Nombres" },
+        { val: formData.fechaNac, label: "Fecha de Nacimiento" },
+        { val: formData.lugarNac, label: "Lugar de Nacimiento" },
+        { val: formData.sexo, label: "Sexo" },
+        { val: formData.estadoCivil, label: "Estado Civil" }
+      ];
+
+      for (const field of textFields) {
+        if (!field.val || field.val.trim() === "") {
+          setErrorMessage(`El campo "${field.label}" es obligatorio.`);
+          return false;
+        }
+      }
+
+      if (!formData.fotoAnverso || !formData.fotoReverso) {
+        setErrorMessage("Debes subir ambas fotos (Anverso y Reverso)");
+        return false;
+      }
+    }
+
+    // Validar Paso 2
+    if (currentStep === 2) {
+      const parentFields = [
+        { val: formData.padreP, label: "Padre - Ap. Paterno" },
+        { val: formData.padreNom, label: "Padre - Nombres" },
+        { val: formData.madreP, label: "Madre - Ap. Paterno" },
+        { val: formData.madreNom, label: "Madre - Nombres" }
+      ];
+
+      for (const field of parentFields) {
+        if (!field.val || field.val.trim() === "") {
+          setErrorMessage(`El campo "${field.label}" es obligatorio.`);
+          return false;
+        }
+      }
+    }
+
+    // Validar Paso 3
+    if (currentStep === 3) {
+      if (!formData.club) {
+        setErrorMessage("Debes seleccionar un club");
+        return false;
+      }
+    }
+
+    return true;
+  };
+
+  const handleNext = () => {
+    if (validateStep(step)) {
+      setStep((prev) => Math.min(prev + 1, 3));
+    }
+  };
   const handleBack = () => setStep((prev) => Math.max(prev - 1, 1));
 
   const getEstadoCivilOptions = () => {
@@ -71,6 +147,10 @@ export default function RegistroJugador() {
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     if (step !== 3) return;
+
+    // Validar paso 3 antes de enviar
+    if (!validateStep(3)) return;
+
     setIsSubmitting(true);
 
     try {
@@ -165,19 +245,19 @@ export default function RegistroJugador() {
                 exit={{ opacity: 0, x: -20 }}
                 className="space-y-6"
               >
-                <Divider label="Datos Principales" />
+                <Divider label="Datos Personales" />
                 <div className="grid md:grid-cols-2 gap-4">
-                  <Input label="N° Documento" required onChange={(e: ChangeEvent<HTMLInputElement>) => setFormData({ ...formData, dni: e.target.value })} />
-                  <Input label="Apellido Paterno" required onChange={(e: ChangeEvent<HTMLInputElement>) => setFormData({ ...formData, apellidoP: e.target.value })} />
-                  <Input label="Apellido Materno" required onChange={(e: ChangeEvent<HTMLInputElement>) => setFormData({ ...formData, apellidoM: e.target.value })} />
-                  <Input label="Nombre(s)" required onChange={(e: ChangeEvent<HTMLInputElement>) => setFormData({ ...formData, nombres: e.target.value })} />
+                  <Input label="N° Documento de identidad" required value={formData.dni} onChange={(e: ChangeEvent<HTMLInputElement>) => handleTextChange(e.target.value, 'dni')} />
+                  <Input label="Apellido Paterno" required value={formData.apellidoP} onChange={(e: ChangeEvent<HTMLInputElement>) => handleNameChange(e.target.value, 'apellidoP')} />
+                  <Input label="Apellido Materno" required value={formData.apellidoM} onChange={(e: ChangeEvent<HTMLInputElement>) => handleNameChange(e.target.value, 'apellidoM')} />
+                  <Input label="Nombre(s)" required value={formData.nombres} onChange={(e: ChangeEvent<HTMLInputElement>) => handleNameChange(e.target.value, 'nombres')} />
                 </div>
 
                 <Divider label="Datos Puntuales" />
                 <div className="grid md:grid-cols-2 gap-4">
-                  <Input label="Fecha de Nacimiento" type="date" required onChange={(e: ChangeEvent<HTMLInputElement>) => setFormData({ ...formData, fechaNac: e.target.value })} />
+                  <Input label="Fecha de Nacimiento" type="date" required value={formData.fechaNac} onChange={(e: ChangeEvent<HTMLInputElement>) => handleTextChange(e.target.value, 'fechaNac')} />
                   <div className="space-y-1">
-                    <Input label="Lugar de Nacimiento" required onChange={(e: ChangeEvent<HTMLInputElement>) => setFormData({ ...formData, lugarNac: e.target.value })} />
+                    <Input label="Lugar de Nacimiento" required value={formData.lugarNac} onChange={(e: ChangeEvent<HTMLInputElement>) => handleTextChange(e.target.value, 'lugarNac')} />
                     <p className="text-[10px] text-gray-500 ml-2">Escribe el lugar tal cual indica tu documento.</p>
                   </div>
                   <Select
@@ -201,12 +281,14 @@ export default function RegistroJugador() {
                   <FileInput
                     label="Foto Anverso"
                     desc="Frontal del documento"
+                    value={formData.fotoAnverso}
                     onChange={(file) => setFormData({ ...formData, fotoAnverso: file })}
                   />
 
                   <FileInput
                     label="Foto Reverso"
                     desc="Trasera del documento"
+                    value={formData.fotoReverso}
                     onChange={(file) => setFormData({ ...formData, fotoReverso: file })}
                   />
                 </div>
@@ -223,15 +305,15 @@ export default function RegistroJugador() {
               >
                 <Divider label="Datos del Padre" />
                 <div className="grid md:grid-cols-3 gap-4">
-                  <Input label="Ap. Paterno" required onChange={(e: ChangeEvent<HTMLInputElement>) => setFormData({ ...formData, padreP: e.target.value })} />
-                  <Input label="Ap. Materno" onChange={(e: ChangeEvent<HTMLInputElement>) => setFormData({ ...formData, padreM: e.target.value })} />
-                  <Input label="Nombres" required onChange={(e: ChangeEvent<HTMLInputElement>) => setFormData({ ...formData, padreNom: e.target.value })} />
+                  <Input label="Ap. Paterno" required value={formData.padreP} onChange={(e: ChangeEvent<HTMLInputElement>) => handleNameChange(e.target.value, 'padreP')} />
+                  <Input label="Ap. Materno" value={formData.padreM} onChange={(e: ChangeEvent<HTMLInputElement>) => handleNameChange(e.target.value, 'padreM')} />
+                  <Input label="Nombres" required value={formData.padreNom} onChange={(e: ChangeEvent<HTMLInputElement>) => handleNameChange(e.target.value, 'padreNom')} />
                 </div>
                 <Divider label="Datos de la Madre" />
                 <div className="grid md:grid-cols-3 gap-4">
-                  <Input label="Ap. Paterno" required onChange={(e: ChangeEvent<HTMLInputElement>) => setFormData({ ...formData, madreP: e.target.value })} />
-                  <Input label="Ap. Materno" onChange={(e: ChangeEvent<HTMLInputElement>) => setFormData({ ...formData, madreM: e.target.value })} />
-                  <Input label="Nombres" required onChange={(e: ChangeEvent<HTMLInputElement>) => setFormData({ ...formData, madreNom: e.target.value })} />
+                  <Input label="Ap. Paterno" required value={formData.madreP} onChange={(e: ChangeEvent<HTMLInputElement>) => handleNameChange(e.target.value, 'madreP')} />
+                  <Input label="Ap. Materno" value={formData.madreM} onChange={(e: ChangeEvent<HTMLInputElement>) => handleNameChange(e.target.value, 'madreM')} />
+                  <Input label="Nombres" required value={formData.madreNom} onChange={(e: ChangeEvent<HTMLInputElement>) => handleNameChange(e.target.value, 'madreNom')} />
                 </div>
               </motion.div>
             )}
@@ -309,6 +391,36 @@ export default function RegistroJugador() {
               <h2 className="text-3xl font-black uppercase">¡Registro Exitoso!</h2>
               <p className="text-gray-400">Los datos del jugador han sido guardados correctamente.</p>
               <button onClick={() => window.location.reload()} className="w-full py-4 bg-emerald-500 text-black font-black rounded-2xl">ENTENDIDO</button>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Error Modal */}
+      <AnimatePresence>
+        {errorMessage && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={() => setErrorMessage(null)}
+            className="fixed inset-0 z-[60] flex items-center justify-center bg-black/90 backdrop-blur-sm p-6"
+          >
+            <motion.div
+              initial={{ scale: 0.9, y: 20 }}
+              animate={{ scale: 1, y: 0 }}
+              exit={{ scale: 0.9, y: 20 }}
+              onClick={(e) => e.stopPropagation()}
+              className="bg-red-500/10 border border-red-500/20 p-8 rounded-[30px] text-center max-w-sm w-full space-y-4 shadow-2xl shadow-red-500/10"
+            >
+              <div className="w-16 h-16 bg-red-500/20 rounded-full flex items-center justify-center mx-auto mb-4 text-red-500">
+                <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+              </div>
+              <h3 className="text-xl font-black uppercase text-white">Atención</h3>
+              <p className="text-gray-300 text-sm font-medium">{errorMessage}</p>
+              <button onClick={() => setErrorMessage(null)} className="w-full py-3 bg-red-500 hover:bg-red-600 text-white font-bold rounded-xl transition-colors mt-4">
+                ENTENDIDO
+              </button>
             </motion.div>
           </motion.div>
         )}
@@ -405,28 +517,38 @@ function Select({ label, options, value, onChange, placeholder = "Seleccionar...
 function FileInput({
   label,
   desc,
+  value,
   onChange
 }: {
   label: string,
   desc: string,
+  value?: File | null,
   onChange: (file: File | null) => void
 }) {
   return (
     <div className="flex flex-col gap-2">
       <label className="text-[10px] font-bold uppercase text-gray-500 ml-2">{label}</label>
       <label className="cursor-pointer group">
-        <div className="border-2 border-dashed border-white/10 group-hover:border-emerald-500/50 p-6 rounded-2xl flex flex-col items-center gap-2 transition-all bg-white/5">
-          <Upload size={20} className="text-gray-500 group-hover:text-emerald-500" />
-          <span className="text-[10px] text-gray-400 uppercase text-center">{desc}</span>
+        <div className={`border-2 border-dashed p-6 rounded-2xl flex flex-col items-center gap-2 transition-all ${value ? 'border-emerald-500 bg-emerald-500/10' : 'border-white/10 group-hover:border-emerald-500/50 bg-white/5'}`}>
+          {value ? (
+            <>
+              <CheckCircle2 size={20} className="text-emerald-500" />
+              <span className="text-xs font-bold text-white max-w-[200px] truncate text-center">{value.name}</span>
+              <span className="text-[10px] text-emerald-500 uppercase">Archivo seleccionado</span>
+            </>
+          ) : (
+            <>
+              <Upload size={20} className="text-gray-500 group-hover:text-emerald-500" />
+              <span className="text-[10px] text-gray-400 uppercase text-center">{desc}</span>
+            </>
+          )}
         </div>
         <input
           type="file"
           className="hidden"
           accept="image/*"
           onChange={(e: ChangeEvent<HTMLInputElement>) => {
-            // Aquí 'e' es el evento, extraemos el archivo
             const file = e.target.files ? e.target.files[0] : null;
-            // Pasamos el archivo (no el evento) hacia arriba
             onChange(file);
           }}
         />
