@@ -10,8 +10,7 @@ export default function ClubesPage() {
         <motion.div 
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="text-center mb-16"
-        >
+          className="text-center mb-16">
           <h1 className="text-6xl md:text-7xl font-black uppercase tracking-tighter mb-4">
             Nuestros <span className="text-emerald-500">Clubes</span>
           </h1>
@@ -29,15 +28,15 @@ export default function ClubesPage() {
               animate={{ opacity: 1, scale: 1 }}
               transition={{ delay: index * 0.1 }}
               whileHover={{ y: -10 }}
-              className="relative group bg-white/5 border border-white/10 rounded-2xl overflow-hidden backdrop-blur-md"
-            >
+              className="relative group bg-white/5 border border-white/10 rounded-2xl overflow-hidden backdrop-blur-md">
               {/* Decoración Superior con el color del club */}
               <div className={`h-24 w-full bg-linear-to-br ${club.color} opacity-20 group-hover:opacity-40 transition-opacity`} />
               
               <div className="p-8 -mt-12">
                 {/* Placeholder de Escudo */}
                 <div className="w-20 h-20 bg-[#0a0f0d] border-2 border-white/10 rounded-2xl flex items-center justify-center mb-6 shadow-2xl group-hover:border-emerald-500 transition-colors">
-                  <Shield size={40} className="text-emerald-500" />
+                  {/* <Shield size={40} className="text-emerald-500" /> */}
+                  <img src={club.logo} alt={club.nombre} className="w-full h-full object-contain p-1" />
                 </div>
 
                 <h3 className="text-2xl font-black uppercase mb-1 tracking-tight">
