@@ -81,10 +81,10 @@ export default function RegistroJugador() {
     // Validar Paso 1
     if (currentStep === 1) {
       const textFields = [
-        { val: formData.dni, label: "DNI" },
+        { val: formData.dni, label: "N° Documento De Identidad" },
         { val: formData.apellidoP, label: "Apellido Paterno" },
         { val: formData.apellidoM, label: "Apellido Materno" },
-        { val: formData.nombres, label: "Nombres" },
+        { val: formData.nombres, label: "Nombre(s)" },
         { val: formData.fechaNac, label: "Fecha de Nacimiento" },
         { val: formData.lugarNac, label: "Lugar de Nacimiento" },
         { val: formData.sexo, label: "Sexo" },
@@ -253,7 +253,7 @@ export default function RegistroJugador() {
                   <Input label="Nombre(s)" required value={formData.nombres} onChange={(e: ChangeEvent<HTMLInputElement>) => handleNameChange(e.target.value, 'nombres')} />
                 </div>
 
-                <Divider label="Datos Puntuales" />
+                <Divider label="Datos Requeridos" />
                 <div className="grid md:grid-cols-2 gap-4">
                   <Input label="Fecha de Nacimiento" type="date" required value={formData.fechaNac} onChange={(e: ChangeEvent<HTMLInputElement>) => handleTextChange(e.target.value, 'fechaNac')} />
                   <div className="space-y-1">
@@ -276,17 +276,17 @@ export default function RegistroJugador() {
                   />
                 </div>
 
-                <Divider label="Datos del Documento" />
+                <Divider label="Datos del Documento De Identidad" />
                 <div className="grid md:grid-cols-2 gap-4">
                   <FileInput
-                    label="Foto Anverso"
+                    label="Foto CI Anverso"
                     desc="Frontal del documento"
                     value={formData.fotoAnverso}
                     onChange={(file) => setFormData({ ...formData, fotoAnverso: file })}
                   />
 
                   <FileInput
-                    label="Foto Reverso"
+                    label="Foto CI Reverso"
                     desc="Trasera del documento"
                     value={formData.fotoReverso}
                     onChange={(file) => setFormData({ ...formData, fotoReverso: file })}
@@ -305,14 +305,14 @@ export default function RegistroJugador() {
               >
                 <Divider label="Datos del Padre" />
                 <div className="grid md:grid-cols-3 gap-4">
-                  <Input label="Ap. Paterno" required value={formData.padreP} onChange={(e: ChangeEvent<HTMLInputElement>) => handleNameChange(e.target.value, 'padreP')} />
-                  <Input label="Ap. Materno" value={formData.padreM} onChange={(e: ChangeEvent<HTMLInputElement>) => handleNameChange(e.target.value, 'padreM')} />
+                  <Input label="Apellido Paterno" required value={formData.padreP} onChange={(e: ChangeEvent<HTMLInputElement>) => handleNameChange(e.target.value, 'padreP')} />
+                  <Input label="Apellido Materno" value={formData.padreM} onChange={(e: ChangeEvent<HTMLInputElement>) => handleNameChange(e.target.value, 'padreM')} />
                   <Input label="Nombres" required value={formData.padreNom} onChange={(e: ChangeEvent<HTMLInputElement>) => handleNameChange(e.target.value, 'padreNom')} />
                 </div>
                 <Divider label="Datos de la Madre" />
                 <div className="grid md:grid-cols-3 gap-4">
-                  <Input label="Ap. Paterno" required value={formData.madreP} onChange={(e: ChangeEvent<HTMLInputElement>) => handleNameChange(e.target.value, 'madreP')} />
-                  <Input label="Ap. Materno" value={formData.madreM} onChange={(e: ChangeEvent<HTMLInputElement>) => handleNameChange(e.target.value, 'madreM')} />
+                  <Input label="Apellido Paterno" required value={formData.madreP} onChange={(e: ChangeEvent<HTMLInputElement>) => handleNameChange(e.target.value, 'madreP')} />
+                  <Input label="Apellido Materno" value={formData.madreM} onChange={(e: ChangeEvent<HTMLInputElement>) => handleNameChange(e.target.value, 'madreM')} />
                   <Input label="Nombres" required value={formData.madreNom} onChange={(e: ChangeEvent<HTMLInputElement>) => handleNameChange(e.target.value, 'madreNom')} />
                 </div>
               </motion.div>
@@ -328,7 +328,7 @@ export default function RegistroJugador() {
               >
                 <h2 className="text-2xl font-black uppercase italic text-emerald-500">Selección de Club</h2>
                 <div className="grid gap-4">
-                  <label className="text-xs font-bold uppercase text-gray-500">Club Deportivo</label>
+                  {/* <label className="text-xs font-bold uppercase text-gray-500">Club Deportivo</label> */}
                   <Select
                     label="Club Deportivo"
                     options={CLUBES}
