@@ -51,26 +51,38 @@ export default function Navbar() {
                         {isMenuOpen ? <X size={28} /> : <Menu size={28} />}
                     </button>
                 </div>
-
-                {/* Mobile Menu Overlay */}
-                <div className={`
-        fixed inset-0 top-20 bg-[#0a0f0d] z-50 transition-transform duration-300 md:hidden ${isMenuOpen ? 'translate-x-0' : 'translate-x-full'}`}>
-                    {/* Aca se hace la apertura */}
-                    <div className="z-150 bg-black/60 backdrop-blur-3xl">
-                        <div className="flex flex-col items-center justify-center h-full gap-10 pb-20">
-                            {navLinks.map((link) => (
-                                <Link
-                                    key={link.href}
-                                    href={link.href}
-                                    onClick={() => setIsMenuOpen(false)}
-                                    className="text-2xl font-black uppercase tracking-tighter hover:text-emerald-500 transition-colors">
-                                    {link.label}
-                                </Link>
-                            ))}
-                        </div>
-                    </div>
-                </div>
             </nav>
+
+            {/* Mobile Menu Overlay - Fuera del nav para que backdrop-blur funcione correctamente */}
+            <div 
+                className={`
+                    fixed inset-0 h-dvh bg-black/30 backdrop-blur-2xl z-200 transition-all duration-300 md:hidden 
+                    flex items-center justify-center overscroll-none
+                    ${isMenuOpen ? 'opacity-100 pointer-events-auto visible' : 'opacity-0 pointer-events-none invisible'}
+                `}
+                style={{
+                    backdropFilter: isMenuOpen ? 'blur(24px)' : 'blur(0px)',
+                    WebkitBackdropFilter: isMenuOpen ? 'blur(24px)' : 'blur(0px)',
+                }}
+            >
+                <button
+                    className="absolute top-6 right-6 p-2 text-white/50 hover:text-white transition-colors z-10"
+                    onClick={() => setIsMenuOpen(false)}>
+                    <X size={32} />
+                </button>
+
+                <div className="flex flex-col items-center justify-center gap-10">
+                    {navLinks.map((link) => (
+                        <Link
+                            key={link.href}
+                            href={link.href}
+                            onClick={() => setIsMenuOpen(false)}
+                            className="text-3xl font-black uppercase tracking-tighter text-white hover:text-emerald-500 transition-colors">
+                            {link.label}
+                        </Link>
+                    ))}
+                </div>
+            </div>
         </>
     );
 }
